@@ -55,6 +55,10 @@ public class Deck {
         this.name = name;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     /* --- equals and hashcode by id (generated) --- */
     @Override
     public int hashCode() {
