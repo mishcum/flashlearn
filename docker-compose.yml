@@ -1,0 +1,12 @@
+# docker-compose.yml
+version: "3.9"
+services:
+  db:
+    image: postgres:16
+    container_name: flashlearn-db
+    environment:
+      POSTGRES_USER: flashlearn
+      POSTGRES_PASSWORD: flashlearn
+      POSTGRES_DB: flashlearn
+    ports:
+      - "5432:5432"
