@@ -1,0 +1,66 @@
+<!DOCTYPE html><html lang="ru">
+<head>
+<meta charset="UTF-8"><title>Колода</title>
+<link rel="stylesheet" href="style.css"></head><body>
+<a href="/" class="btn">← Назад</a>
+<h1 id="deck-name"></h1>
+
+<h2>Карточки</h2>
+<div id="card-list"></div>
+
+<h2>Добавить карточку</h2>
+<input id="q" placeholder="Вопрос"><br>
+<input id="a" placeholder="Ответ"><br>
+<button onclick="addCard()">Сохранить</button>
+
+<br><br>
+<div id="learn-buttons"></div>
+
+<script>
+  const params  = new URLSearchParams(location.search);
+  const deckId  = params.get('id');          // id выбранной колоды
+  if (!deckId) location = '/';
+
+  document.getElementById('learn-buttons').innerHTML = `
+    <a class="btn" href="review.html?deckId=${deckId}">Учить по порядку</a>
+    <a class="btn" href="review.html?deckId=${deckId}&mode=smart">Учить по алгоритму</a>
+  `;
+
+
+function loadDeck(){ fetch(`/decks/${deckId}`).then(r=>r.json())
+  .then(d=>{document.getElementById('deck-name').textContent=d.name}); }
+
+function render(cards){
+  const list = document.getElementById('card-list');
+  list.innerHTML = '';
+  cards.forEach(c => {
+    list.insertAdjacentHTML('beforeend', `
+      <div class="card" data-id="${c.id}">
+        <b>В:</b> ${c.question}<br>
+        <b>О:</b> ${c.answer}<br>
+        <button class="btn-delete" onclick="deleteCard(${c.id})">🗑 Удалить</button>
+      </div>
+    `);
+  });
+}
+
+function deleteCard(id) {
+  if (!confirm("Удалить эту карточку?")) return;
+  fetch(`/cards/${id}`, { method: 'DELETE' })
+    .then(() => loadCards());
+}
+
+
+function loadCards(){ fetch(`/cards/deck/${deckId}`).then(r=>r.json()).then(render); }
+function addCard(){
+  const q=document.getElementById('q').value.trim();
+  const a=document.getElementById('a').value.trim();
+  if(!q||!a) return;
+  fetch('/cards',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({deckId:Number(deckId),question:q,answer:a})})
+    .then(()=>{document.getElementById('q').value='';document.getElementById('a').value='';loadCards();});
+}
+
+loadDeck(); loadCards();
+</script>
+</body></html>

@@ -1,42 +1,48 @@
 package com.flashlearn.web;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.flashlearn.domain.Card;
-import com.flashlearn.domain.Deck;
-import com.flashlearn.service.ReviewService;
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.List;
-
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import com.flashlearn.dto.ReviewCardDTO;
+import com.flashlearn.service.ReviewService;
 
 @WebMvcTest(ReviewController.class)
 class ReviewControllerTest {
 
     @Autowired private MockMvc mockMvc;
+    @SuppressWarnings("removal")
     @MockBean private ReviewService reviewService;
-    @Autowired private ObjectMapper objectMapper;
 
     @Test
-    void getDueCards_returnsCards() throws Exception {
-        Card c1 = new Card(new Deck("Deck1"), "Q1", "A1");
-        Card c2 = new Card(new Deck("Deck2"), "Q2", "A2");
-        c1.setId(1L); c2.setId(2L);
-        when(reviewService.dueCards()).thenReturn(List.of(c1, c2));
+    void getAlgorithmicReviews_returnsCards() throws Exception {
+        var dto1 = new ReviewCardDTO(1L, "Q1", "A1", "Deck1");
+        var dto2 = new ReviewCardDTO(2L, "Q2", "A2", "Deck2");
 
-        mockMvc.perform(get("/reviews/today"))
+        when(reviewService.reviewByAlgorithm(null)).thenReturn(List.of(dto1, dto2));
+
+        mockMvc.perform(get("/reviews/algorithmic"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$[0].id").value(1L))
-                .andExpect(jsonPath("$[1].id").value(2L));
+                .andExpect(jsonPath("$[0].question").value("Q1"))
+                .andExpect(jsonPath("$[0].deckName").value("Deck1"))
+                .andExpect(jsonPath("$[1].id").value(2L))
+                .andExpect(jsonPath("$[1].question").value("Q2"))
+                .andExpect(jsonPath("$[1].deckName").value("Deck2"));
     }
 
     @Test
@@ -44,6 +50,6 @@ class ReviewControllerTest {
         mockMvc.perform(post("/reviews/10/grade/4"))
                 .andExpect(status().isNoContent());
 
-        verify(reviewService, times(1)).grade(10L, (short)4);
+        verify(reviewService, times(1)).grade(10L, 4);
     }
 }

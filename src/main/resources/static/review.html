@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Учить</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <a href="/" class="btn">← Домой</a>
+  <h1>Карточки к повторению</h1>
+
+  <div id="study-area"></div>
+
+  <script>
+    const params = new URLSearchParams(location.search); 
+    const mode = params.get('mode');
+    const deckId = params.get('deckId');
+
+    const API = (mode === 'smart')
+      ? `/reviews/algorithmic${deckId ? '?deckId=' + deckId : ''}`
+      : `/reviews/all${deckId ? '?deckId=' + deckId : ''}`;
+
+
+    let due = [], idx = 0;
+
+    function load() {
+      fetch(API)
+        .then(r => r.json())
+        .then(arr => { due = arr; idx = 0; show(); });
+    }
+
+    function grade(q) {
+      const card = due[idx];
+      fetch(`/reviews/${card.id}/grade/${q}`, { method: 'POST' })
+        .then(() => { idx++; show(); });
+    }
+
+    function show() {
+      const root = document.getElementById('study-area');
+      if (idx >= due.length) {
+        root.innerHTML = '<p>На сегодня всё! 🎉</p>';
+        return;
+      }
+
+      const c = due[idx];
+      let buttons = '';
+      for (let i = 1; i <= 5; i++) {
+        buttons += `<button onclick="grade(${i})">${i}</button> `;
+      }
+
+
+      root.innerHTML = `
+        <div class="card">
+          <p><b>Вопрос:</b><br>${c.question}</p>
+          <details><summary>Показать ответ</summary><p>${c.answer}</p></details>
+          <div style="margin-top:1rem">
+            <p><b>Оцените свой ответ:</b></p>
+            ${buttons}
+          </div>
+        </div>`;
+    }
+
+    load();
+  </script>
+</body>
+</html>

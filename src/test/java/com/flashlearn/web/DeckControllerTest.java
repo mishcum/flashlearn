@@ -1,26 +1,30 @@
 package com.flashlearn.web;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.flashlearn.domain.Deck;
-import com.flashlearn.repository.DeckRepository;
+import java.util.List;
+import java.util.Optional;
 
-import org.junit.jupiter.api.Disabled;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.List;
-import java.util.Optional;
-
-import static org.hamcrest.Matchers.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.flashlearn.domain.Deck;
+import com.flashlearn.repository.DeckRepository;
 
 @WebMvcTest(DeckController.class)
 class DeckControllerTest {
@@ -28,6 +32,7 @@ class DeckControllerTest {
     @Autowired private MockMvc mockMvc;
     @Autowired private ObjectMapper objectMapper;
 
+    @SuppressWarnings("removal")
     @MockBean private DeckRepository deckRepository;
 
     @Test
@@ -51,14 +56,6 @@ class DeckControllerTest {
                 .andExpect(jsonPath("$.name", is("Java")));
     }
 
-    @Disabled
-    @Test
-    void getDeckById_notFound() throws Exception {
-        when(deckRepository.findById(99L)).thenReturn(Optional.empty());
-
-        mockMvc.perform(get("/decks/99"))
-                .andExpect(status().isNotFound());
-    }
 
     @Test
     void createDeck_savesDeck() throws Exception {

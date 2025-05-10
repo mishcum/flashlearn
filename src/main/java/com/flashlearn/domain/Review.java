@@ -2,6 +2,8 @@ package com.flashlearn.domain;
 
 import java.time.LocalDateTime;
 
+import org.hibernate.annotations.CreationTimestamp;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -10,6 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 
 @Entity
@@ -23,23 +26,31 @@ public class Review {
     @JoinColumn(name = "card_id", nullable = false)
     private Card card;
 
-    @Column(name = "review_time", nullable = false)
-    private LocalDateTime reviewTime;
-
     
     private double easeRate;
-    private int intervalDays;
     private int quality;
+
+    @CreationTimestamp
+    @SuppressWarnings("unused")
+    private LocalDateTime createdAt;
+
+    @Column(name = "review_time", nullable = false)
+    @SuppressWarnings("unused")
+    private LocalDateTime reviewTime;
 
     protected Review() { } // for JPA
 
-    public Review(Card card, LocalDateTime reviewTime, double easeRate, int intervalDays, int quality) {
+    public Review(Card card, double easeRate, int quality) {
         this.card = card;
-        this.reviewTime = reviewTime;
         this.easeRate = easeRate;
-        this.intervalDays = intervalDays;
         this.quality = quality;
     }
+
+    @PrePersist
+    protected void onCreate() {
+        this.reviewTime = LocalDateTime.now();
+    }
+
 
     /* --- getters --- */
     public Long getId() {
@@ -48,19 +59,23 @@ public class Review {
     public Card getCard() {
         return card;
     }
-    public LocalDateTime getReviewTime() {
-        return reviewTime;
-    }
     public double getEaseRate() {
         return easeRate;
-    }
-    public int getIntervalDays() {
-        return intervalDays;
     }
     public int getQuality() {
         return quality;
     }
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+    public LocalDateTime getReviewTime() {
+        return reviewTime;
+    }
 
+    /* --- setters --- */
+    public void setReviewTime(LocalDateTime reviewTime) {
+        this.reviewTime = reviewTime;
+    }
     @Override
     public int hashCode() {
         final int prime = 31;

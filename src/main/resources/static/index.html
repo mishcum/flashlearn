@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Колоды</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>Мои колоды</h1>
+
+  <a class="btn" href="review.html?mode=smart">🎯 Подборка: Учить сложное</a>
+  
+  <div id="deck-list"></div>
+
+  <h2>Создать колоду</h2>
+  <input id="new-name" placeholder="Название">
+  <button onclick="createDeck()">Добавить</button>
+
+<script>
+const API = '/decks';
+
+function render(decks){
+  const list = document.getElementById('deck-list');
+  list.innerHTML = '';
+  decks.forEach(d=>{
+    list.insertAdjacentHTML('beforeend', `
+      <div class="deck" data-id="${d.id}">
+        <strong>${d.name}</strong><br>
+        <small>создана: ${new Date(d.createdAt).toLocaleString()}</small><br>
+        <a class="btn" href="deck.html?id=${d.id}">Открыть</a>
+        <button class="btn-delete" onclick="deleteDeck(${d.id})" title="Удалить">🗑</button>
+      </div>`
+    );
+  });
+}
+
+function load(){
+  fetch(API).then(r => r.json()).then(render);
+}
+
+function createDeck(){
+  const name = document.getElementById('new-name').value.trim();
+  if(!name) return;
+  fetch(API, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({name})
+  }).then(() => {
+    document.getElementById('new-name').value = '';
+    load();
+  });
+}
+
+function deleteDeck(id){
+  if (!confirm("Удалить эту колоду?")) return;
+  fetch(`${API}/${id}`, { method: 'DELETE' })
+    .then(() => load());
+}
+
+load();
+</script>
+</body>
+</html>
