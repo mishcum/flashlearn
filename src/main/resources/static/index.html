@@ -6,10 +6,11 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Мои колоды</h1>
+  <div class="deck-header">
+    <h1>Мои колоды</h1>
+    <a class="btn" href="review.html?mode=smart">🎯 Учить сложное</a>
+  </div>
 
-  <a class="btn" href="review.html?mode=smart">🎯 Подборка: Учить сложное</a>
-  
   <div id="deck-list"></div>
 
   <h2>Создать колоду</h2>
@@ -22,15 +23,21 @@ const API = '/decks';
 function render(decks){
   const list = document.getElementById('deck-list');
   list.innerHTML = '';
-  decks.forEach(d=>{
+  decks.forEach(d => {
     list.insertAdjacentHTML('beforeend', `
       <div class="deck" data-id="${d.id}">
         <strong>${d.name}</strong><br>
-        <small>создана: ${new Date(d.createdAt).toLocaleString()}</small><br>
-        <a class="btn" href="deck.html?id=${d.id}">Открыть</a>
-        <button class="btn-delete" onclick="deleteDeck(${d.id})" title="Удалить">🗑</button>
-      </div>`
-    );
+        <small>создана: ${new Date(d.createdAt).toLocaleString('ru-RU', {
+          year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'
+        })}</small>
+        <div class="btn-group">
+          <a class="btn" href="deck.html?id=${d.id}">Открыть</a>
+          <button class="btn btn-danger" onclick="deleteDeck(${d.id})" title="Удалить">
+            🗑
+          </button>
+        </div>
+      </div>
+    `);
   });
 }
 
@@ -40,7 +47,7 @@ function load(){
 
 function createDeck(){
   const name = document.getElementById('new-name').value.trim();
-  if(!name) return;
+  if (!name) return;
   fetch(API, {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
@@ -53,8 +60,7 @@ function createDeck(){
 
 function deleteDeck(id){
   if (!confirm("Удалить эту колоду?")) return;
-  fetch(`${API}/${id}`, { method: 'DELETE' })
-    .then(() => load());
+  fetch(`${API}/${id}`, { method: 'DELETE' }).then(() => load());
 }
 
 load();

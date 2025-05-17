@@ -1,26 +1,81 @@
-:root { font-family: system-ui, sans-serif; }
-body    { margin: 0; padding: 2rem; max-width: 800px; }
-h1,h2   { margin: .2em 0 .6em; }
+:root {
+  font-family: system-ui, sans-serif;
+}
+
+body {
+  margin: 0;
+  padding: 2rem;
+  max-width: 800px;
+  background-color: #f9fafb;
+}
+
+h1, h2 {
+  margin: .2em 0 .6em;
+}
+
 button, a.btn {
-  background:#2563eb; color:#fff; padding:.5em 1em; border:0;
-  border-radius:6px; text-decoration:none; cursor:pointer;
-}
-button:hover, a.btn:hover { background:#1d4ed8; }
-.card, .deck {
-  border:1px solid #e5e7eb; border-radius:8px; padding:1rem; margin-bottom:.8rem;
-}
-.hidden{display:none}
-.btn-delete {
-  background: #dc2626;
-  color: white;
-  padding: .5em .8em;
+  background: #2563eb;
+  color: #fff;
+  padding: .4em 1em;
   border: 0;
   border-radius: 6px;
+  text-decoration: none;
   cursor: pointer;
+  font-size: 0.95em;
+  transition: background 0.2s ease-in-out;
+}
+
+button:hover, a.btn:hover {
+  background: #1d4ed8;
+}
+
+.card, .deck {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: .8rem;
+  background: white;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+}
+
+.hidden {
+  display: none;
+}
+
+.btn-danger {
+  background: #ef4444;
+  color: white;
+  padding: 0.35em 0.7em;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.9em;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s ease-in-out;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.btn-danger:hover {
+  background: #dc2626;
+  transform: scale(1.05);
+}
+
+.btn-group {
+  margin-top: 0.4rem;
+  display: flex;
+  gap: 0.4rem;
+}
+
+.deck-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+#new-name {
+  padding: 0.4em;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  margin-right: 0.5rem;
   font-size: 1em;
 }
-
-.btn-delete:hover {
-  background: #b91c1c;
-}
-
