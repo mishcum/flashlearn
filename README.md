@@ -1,3 +1,5 @@
+[![Maven CI](https://github.com/mishcum/flashlearn/actions/workflows/maven.yml/badge.svg?event=push)](https://github.com/mishcum/flashlearn/actions/workflows/maven.yml)
+
 # 📚 FlashLearn
 
 **FlashLearn** — это веб-приложение для создания и повторения карточек.
